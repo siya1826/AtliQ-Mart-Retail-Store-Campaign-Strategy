@@ -170,48 +170,47 @@ SELECT
     CONCAT(ROUND(SUM(revenue_after_promo) / 1000000, 2), 'M') AS revenue_after_promo,
     CONCAT(ROUND(SUM(IR) / 1000000, 2), 'M')  AS incremental_revenue,
     RANK() OVER (ORDER BY SUM(IR) DESC) AS city_rank
-FROM
-    sales_summary
-GROUP BY
-    city
-ORDER BY
-    SUM(IR) DESC;
+FROM sales_summary
+GROUP BY city
+ORDER BY SUM(IR) DESC;
 
 
   
 -- 7.) Top 10 store based on incremental revenue
-SELECT
-    store_id,
-    city,
-    CONCAT(ROUND(SUM(revenue_before_promo) / 1000000, 2),'M') AS revenue_before_promo,
-    CONCAT(ROUND(SUM(revenue_after_promo) / 1000000, 2),'M') AS revenue_after_promo,
-    CONCAT(ROUND(SUM(IR) / 1000000, 2),'M') AS incremental_revenue,
-    RANK() OVER (ORDER BY SUM(IR) DESC) AS store_rank
-FROM
-    sales_summary
-GROUP BY
-    store_id,
-    city
-ORDER BY
-    SUM(IR) DESC
+SELECT 
+    s.store_id,
+    s.city,
+    ROUND(
+       SUM(
+            (f.base_price * f.quantity_sold_after_promo)
+            -
+            (f.base_price * f.quantity_sold_before_promo)
+        ) / 1000000,
+        2
+    ) AS incremental_revenue_mln
+FROM fact_events f
+
+INNER JOIN dim_stores s
+    ON f.store_id = s.store_id
+GROUP BY s.store_id, s.city
+ORDER BY incremental_revenue_mln DESC
 LIMIT 10;
 
 
 -- 8.) Bottom 10 store based on incremental sold units
-SELECT
-    store_id,
-    city,
-    SUM(quantity_sold_before_promo) AS quantity_sold_before_promo,
-    SUM(quantity_sold_after_promo) AS quantity_sold_after_promo,
-    SUM(ISU) AS ISU,
-    RANK() OVER (ORDER BY SUM(ISU) ASC) AS store_rank
-FROM
-    sales_summary
-GROUP BY
-    store_id,
-    city
-ORDER BY
-    SUM(ISU) ASC
+SELECT 
+       s.store_id, 
+       s.city,
+       SUM(
+           f.quantity_sold_after_promo
+           -
+           quantity_sold_before_promo
+           ) AS incremental_sold_quantity
+FROM fact_events f 
+JOIN dim_stores s
+     ON f.store_id = s.store_id
+GROUP BY s.store_id, s.city
+ORDER BY incremental_sold_quantity
 LIMIT 10;
 
 
@@ -236,10 +235,8 @@ SELECT
     CONCAT(ROUND(SUM(revenue_after_promo)/1000000,2),' M') AS revenue_after_promo,
     CONCAT(ROUND(SUM(IR)/1000000,2),' M') AS incremental_revenue,
     ROUND((SUM(revenue_after_promo) - SUM(revenue_before_promo))/ NULLIF(SUM(revenue_before_promo), 0) * 100,2) AS `IR%`
-FROM
-    sales_summary
-GROUP BY
-    promo_type
+FROM sales_summary
+GROUP BY promo_type
 ORDER BY `IR%` DESC
 
 
@@ -248,10 +245,8 @@ SELECT
     promo_type,
     ROUND(SUM(IR)/1000000,2) AS IR,
     SUM(ISU) AS ISU
-FROM
-    sales_summary
-GROUP BY
-    promo_type
+FROM sales_summary
+GROUP BY promo_type
 ORDER BY IR DESC,ISU DESC
 
 
@@ -262,12 +257,9 @@ SELECT
     CONCAT(ROUND(SUM(revenue_after_promo) / 1000000, 2),'M') AS revenue_after_promo,
     CONCAT(ROUND(SUM(IR) / 1000000, 2),'M') AS incremental_revenue,
     ROUND((SUM(IR) / SUM(revenue_before_promo)) * 100,2) AS `IR%`
-FROM
-    sales_summary
-GROUP BY
-    category
-ORDER BY
-    incremental_revenue DESC;
+FROM sales_summary
+GROUP BY category
+ORDER BY incremental_revenue DESC;
 
 
 -- 13.) Product category - incremental sold units
@@ -277,12 +269,9 @@ SELECT
     SUM(quantity_sold_after_promo) AS revenue_after_promo,
     SUM(ISU) AS incremental_sold_units,
     ROUND((SUM(ISU) / SUM(quantity_sold_before_promo)) * 100,2) AS `ISU%`
-FROM
-    sales_summary
-GROUP BY
-    category
-ORDER BY
-    incremental_sold_units DESC;
+FROM sales_summary
+GROUP BY category
+ORDER BY incremental_sold_units DESC;
 
 
 -- 14.) Top 3 & bottom 3 product based on incremental revenue
