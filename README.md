@@ -135,7 +135,8 @@ GROUP BY
    ON e.product_code = p.product_code
    WHERE e.base_price > 500 AND e.promo_type = "BOGOF";
    ```
-
+   ![](Images/1.png)
+   
 ---
 
 2) Store Presence by City: Generate a report that provides an overview of the number of stores in each city.
@@ -146,6 +147,7 @@ GROUP BY
    GROUP BY city 
    ORDER BY total_stores DESC;
    ```
+   ![](Images/2.png)
 
 ---
 
@@ -161,6 +163,7 @@ GROUP BY
    FROM sales_summary
    GROUP BY campaign_name;
    ```
+   ![](3.png)
 
 ---
 
@@ -186,6 +189,7 @@ GROUP BY
         GROUP BY category
     ) AS subquery;
    ```
+   ![](Images/4_diwali.png)
 
     ```sql
    --- For Sankranti Campaign
@@ -207,7 +211,8 @@ GROUP BY
         GROUP BY category
     ) AS subquery;
    ```
-
+    ![](Images/4_sanskriti.png)
+   
 ---
 
 5) Create a report featuring the Top 5 products, ranked by Incremental Revenue Percentage (IR%), across all campaigns.
@@ -223,6 +228,7 @@ GROUP BY
    ORDER BY `IR%` DESC
    LIMIT 5;
    ```
+   ![](Images/5.png)
 
 ---
 
@@ -239,6 +245,7 @@ GROUP BY
    GROUP BY city
    ORDER BY SUM(IR) DESC;
    ```
+   ![](Images/6.png)
    
 ---
 
@@ -263,6 +270,7 @@ GROUP BY
    ORDER BY incremental_revenue_mln DESC
    LIMIT 10;
    ```
+   ![](Images/7.png)
 
 ---
 
@@ -285,6 +293,7 @@ GROUP BY
    ORDER BY incremental_sold_quantity
    LIMIT 10;
    ```
+   ![](Images/8.png)
 
 ---
 
@@ -301,6 +310,7 @@ GROUP BY
    GROUP BY promo_type
    ORDER BY `ISU%` DESC
    ```
+   ![](Images/9.png)
 
 ---
 
@@ -319,6 +329,7 @@ GROUP BY
     promo_type
     ORDER BY `IR%` DESC
    ```
+   ![](Images/10.png)
 
 ---
 
@@ -333,6 +344,7 @@ GROUP BY
    GROUP BY promo_type
    ORDER BY IR DESC,ISU DESC
    ```
+   ![](Images/11.png)
 
 ---
 
@@ -349,6 +361,7 @@ GROUP BY
    GROUP BY category
    ORDER BY incremental_revenue DESC;
    ```
+   ![](Images/12.png)
 
 ---
 
@@ -363,8 +376,9 @@ GROUP BY
     ROUND((SUM(ISU) / SUM(quantity_sold_before_promo)) * 100,2) AS `ISU%`
    FROM sales_summary
    GROUP BY category
-  ORDER BY incremental_sold_units DESC;
+   ORDER BY incremental_sold_units DESC;
    ```
+   ![](Images/13.png)
 
 ---
 
@@ -389,6 +403,7 @@ GROUP BY
    WHERE top_rank <= 3 OR bottom_rank <= 3
    ORDER BY IR DESC;
    ```
+   ![](Images/14.png)
 
 ---
 
@@ -413,6 +428,7 @@ GROUP BY
    WHERE top_rank <= 3 OR bottom_rank <= 3
    ORDER BY ISU DESC;
    ```
+   ![](Images/15.png)
 
 ---
 
@@ -453,6 +469,7 @@ GROUP BY
     ) ranked_stores
     WHERE store_rank <= 3;
    ```
+   ![](Images/16.png)
 
 ---
 
@@ -493,6 +510,7 @@ GROUP BY
     ) ranked_products
     WHERE product_rank <= 5;
    ```
+   ![](Images/17.png)
 
 ---
 
