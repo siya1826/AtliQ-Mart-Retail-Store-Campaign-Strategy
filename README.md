@@ -163,7 +163,7 @@ GROUP BY
    FROM sales_summary
    GROUP BY campaign_name;
    ```
-   ![](3.png)
+   ![](Images/3.png)
 
 ---
 
